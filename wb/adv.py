@@ -1,12 +1,7 @@
 import requests
 import pandas as pd
-import json
+from config import get_config_value  # Import the utility function
 
-
-def load_config(config_file):
-    with open(config_file, 'r') as f:
-        config_data = json.load(f)
-    return config_data
 
 def getRkList():
     """
@@ -28,20 +23,11 @@ def getRkList():
     # 9 - идут показы
     # 11 - кампания на паузе
 
-    # type	
-    # integer
-    # Enum: 4 5 6 7
-    # Тип кампании:
-    # 4 - кампания в каталоге
-    # 5 - кампания в карточке товара
-    # 6 - кампания в поиске
-    # 7 - кампания в рекомендациях на главной странице
-    # 8 - автоматическая кампания
-    # 9 - поиск + каталог
 
     # URL and authorization token setup
     url = "https://advert-api.wb.ru/adv/v1/promotion/count"
-    PARAM_AUTH_WB_ADVERTIZING = "eyJhbGciOiJFUzI1NiIsImtpZCI6IjIwMjMxMDI1djEiLCJ0eXAiOiJKV1QifQ.eyJlbnQiOjEsImV4cCI6MTcxNjc4MTU5MSwiaWQiOiI1OTQ4OGQ5NC04NzU0LTQzNTQtOGNhZC0yMDZkM2RlYTgyYjciLCJpaWQiOjQ0MDU0NjIzLCJvaWQiOjUzODEsInMiOjEwNzM3NDE4ODgsInNpZCI6IjIyMWM2ZGY5LTJjOTktNWQ3NC1hN2JlLTc0NzY2YTdlNjE1OCIsInVpZCI6NDQwNTQ2MjN9.OvDKn_B_V2C02gNlsQva_VkJRkbw-7nROBHq2o8DTuhAxR6QzbvBjT3H_U0KH3fL_AfHmKSQCPOnIYlxWW2MPA"
+
+    PARAM_AUTH_WB_ADVERTIZING = get_config_value("PARAM_AUTH_WB_ADVERTIZING", "")
 
 
     headers = {
@@ -71,6 +57,17 @@ def getRkList():
     df = pd.DataFrame(advert_list)
 
     # Filter rows with type either 8 or 9
+    # type	
+    # integer
+    # Enum: 4 5 6 7
+    # Тип кампании:
+    # 4 - кампания в каталоге
+    # 5 - кампания в карточке товара
+    # 6 - кампания в поиске
+    # 7 - кампания в рекомендациях на главной странице
+    # 8 - автоматическая кампания
+    # 9 - поиск + каталог
+
     df_filtered = df[df['type'].isin([8, 9])]
 
     return df_filtered
